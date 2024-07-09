@@ -1,25 +1,19 @@
 const { check, validationResult } = require('express-validator');
 const slugify = require('slugify');
-const JobPost = require("./job-post");
-const REST_API = require("../../utils/crudHelper");
-const { Op } = require("sequelize");
+const AdmitCard = require('./admit-card'); // Assuming this is your AdmitCard model
+const REST_API = require('../../utils/crudHelper'); // Adjust path as necessary
+const { Op } = require('sequelize');
 
 // Function to sanitize and slugify the slug field
 const sanitizeAndSlugifySlug = (inputSlug) => {
-  // Trim leading and trailing spaces
   let slug = inputSlug.trim();
-
-  // Replace multiple spaces with a single space or hyphen
   slug = slug.replace(/\s+/g, ' ');
-
-  // Slugify the sanitized string
   slug = slugify(slug, { lower: true });
-
   return slug;
 };
 
-// Create a job post with manually entered slug
-const createJobPost = [
+// Create an admit card
+const createAdmitCard = [
   // Validation middleware
   check('title').notEmpty().withMessage('Title is required'),
   check('slug').notEmpty().withMessage('Slug is required'),
@@ -38,17 +32,17 @@ const createJobPost = [
     slug = sanitizeAndSlugifySlug(slug);
 
     try {
-      const jobPost = await JobPost.create({ title, content, slug, metaTags, metaDescription, canonicalUrl, created_by, state, categories });
-      res.status(200).json(jobPost);
+      const admitCard = await AdmitCard.create({ title, content, slug, metaTags, metaDescription, canonicalUrl, created_by, state, categories });
+      res.status(200).json(admitCard);
     } catch (error) {
-      console.error("Error creating job post:", error);
-      res.status(500).json({ error: "Failed to create job post." });
+      console.error("Error creating admit card:", error);
+      res.status(500).json({ error: "Failed to create admit card." });
     }
   }
 ];
 
-// Get all job posts with content-based text search
-const getJobPostList = async (req, res) => {
+// Get all admit cards with content-based text search
+const getAdmitCardList = async (req, res) => {
   const { searchQuery } = req.query;
   let whereClause = {};
 
@@ -62,29 +56,28 @@ const getJobPostList = async (req, res) => {
   }
 
   try {
-    const jobPosts = await JobPost.findAll({ where: whereClause });
-
-    res.status(200).json(jobPosts);
+    const admitCards = await AdmitCard.findAll({ where: whereClause });
+    res.status(200).json(admitCards);
   } catch (error) {
-    console.error("Error retrieving job posts:", error);
-    res.status(500).json({ error: "Failed to retrieve job posts." });
+    console.error("Error retrieving admit cards:", error);
+    res.status(500).json({ error: "Failed to retrieve admit cards." });
   }
 };
 
-// Get job post by ID
-const getJobPostById = async (req, res) => {
+// Get admit card by ID
+const getAdmitCardById = async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await REST_API._getDataListById(req, res, JobPost, "id", id);
+    const response = await REST_API._getDataListById(req, res, AdmitCard, "id", id);
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error retrieving job post:", error);
-    res.status(500).json({ error: "Failed to retrieve job post." });
+    console.error("Error retrieving admit card:", error);
+    res.status(500).json({ error: "Failed to retrieve admit card." });
   }
 };
 
-// Update a job post
-const updateJobPost = [
+// Update an admit card
+const updateAdmitCard = [
   check('title').notEmpty().withMessage('Title is required'),
   check('slug').notEmpty().withMessage('Slug is required'),
   check('created_by').notEmpty().withMessage('Created by is required'),
@@ -101,31 +94,30 @@ const updateJobPost = [
     slug = sanitizeAndSlugifySlug(slug);
 
     try {
-      // Ensure to pass req.params.id or another identifier for the update operation
-      const response = await REST_API._update(req, res, JobPost);
+      const response = await REST_API._update(req, res, AdmitCard);
       res.status(200).json(response);
     } catch (error) {
-      console.error("Error updating job post:", error);
-      res.status(500).json({ error: "Failed to update job post." });
+      console.error("Error updating admit card:", error);
+      res.status(500).json({ error: "Failed to update admit card." });
     }
   }
 ];
 
-// Delete a job post
-const deleteJobPost = async (req, res) => {
+// Delete an admit card
+const deleteAdmitCard = async (req, res) => {
   try {
-    const response = await REST_API._delete(req, res, JobPost);
+    const response = await REST_API._delete(req, res, AdmitCard);
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error deleting job post:", error);
-    res.status(500).json({ error: "Failed to delete job post." });
+    console.error("Error deleting admit card:", error);
+    res.status(500).json({ error: "Failed to delete admit card." });
   }
 };
 
 module.exports = {
-  createJobPost,
-  getJobPostList,
-  getJobPostById,
-  updateJobPost,
-  deleteJobPost,
+  createAdmitCard,
+  getAdmitCardList,
+  getAdmitCardById,
+  updateAdmitCard,
+  deleteAdmitCard,
 };
