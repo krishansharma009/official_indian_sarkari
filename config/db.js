@@ -1,24 +1,33 @@
-const { Sequelize } = require('sequelize');
-const mysql = require('mysql2');
+const { Sequelize } = require("sequelize");
+const mysql = require("mysql2"); // Required for Sequelize with MySQL
+require("dotenv").config(); // Load environment variables from .env file
 
-const sequelize = new Sequelize('saurabhbhai', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql',
-  dialectModule: require('mysql2'),
-  dialectOptions: {
-    options: {
-      encrypt: true, // Use this if you're on Windows Azure
+const sequelize = new Sequelize(
+  'defaultdb', // Database name
+  'avnadmin',  // Username
+  'AVNS_zjqFhqWSLgPT4ool4Bq', // Password
+  {
+    host: 'safartour-safartour.i.aivencloud.com', // Hostname
+    port: 21128, // Port number
+    dialect: "mysql", // Specify the dialect as MySQL
+    dialectModule: mysql, // Use mysql2 explicitly for Sequelize
+    dialectOptions: {
+      ssl: {
+        require: true, // SSL connection required
+        rejectUnauthorized: false // Skip SSL validation (optional, based on server configuration)
+      }
     },
-  },
-});
+  }
+);
 
 // Test the connection
-sequelize.authenticate()
+sequelize
+  .authenticate()
   .then(() => {
-    console.log('Connection has been established successfully.');
+    console.log("Connection has been established successfully.");
   })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
   });
 
-module.exports = sequelize; // Export the sequelize instance directly
+module.exports = sequelize;
